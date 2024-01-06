@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package count;
+
+service CountNum{
+	rpc QuickCount(CountRequest)returns (CountReply);
+}
+
+message CountRequest{
+	int32 numa = 1;
+	int32 numb = 2;
+	int32 opt  = 3;
+}
+
+message CountReply{
+	int32 reNum = 1;
+}
