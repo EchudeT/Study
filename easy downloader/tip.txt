@@ -1,0 +1,107 @@
+using System.Net;
+
+WebClient webClient = new WebClient();
+webClient.DownloadProgressChanged += (sender, e) =>
+{
+   int bytesReceived = e.BytesReceived; // 已经下载的字节数
+   int totalBytesToReceive = e.TotalBytesToReceive; // 总共需要的字节数
+
+   // 在这里，你可以使用bytesReceived和totalBytesToReceive变量
+   // 例如，你可以计算下载的百分比
+   double percentageDownloaded = (double)bytesReceived / totalBytesToReceive * 100;
+   Console.WriteLine($"已经下载了{percentageDownloaded}%的数据");
+};
+
+string url = "http://example.com/myfile.txt";
+string path = @"C:\path\to\save\myfile.txt";
+webClient.DownloadFileAsync(new Uri(url), path);
+
+//=================================================================================
+
+public static class HttpClientExtensions
+{
+   public static async Task DownloadAsync(this HttpClient client, string requestUri, Stream destination, IProgress<float> progress = null, CancellationToken cancellationToken = default) {
+       using (var response = await client.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead)) {
+           var contentLength = response.Content.Headers.ContentLength;
+
+           using (var download = await response.Content.ReadAsStreamAsync(cancellationToken)) {
+               if (progress == null || !contentLength.HasValue) {
+                  await download.CopyToAsync(destination);
+                  return;
+               }
+
+               var relativeProgress = new Progress<long>(totalBytes => progress.Report((float)totalBytes / contentLength.Value));
+               await download.CopyToAsync(destination, 81920, relativeProgress, cancellationToken);
+               progress.Report(1);
+           }
+       }
+   }
+}
+public static class StreamExtensions
+{
+   public static async Task CopyToAsync(this Stream source, Stream destination, int bufferSize, IProgress<long> progress = null, CancellationToken cancellationToken = default) {
+       var buffer = new byte[bufferSize];
+       long totalBytesRead = 0;
+       int bytesRead;
+       while ((bytesRead = await source.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false)) != 0) {
+           await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
+           totalBytesRead += bytesRead;
+           progress?.Report(totalBytesRead);
+       }
+   }
+}
+
+using (var client = new HttpClient()) {
+   client.Timeout = TimeSpan.FromMinutes(5);
+
+   using (var file = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None)) {
+       await client.DownloadAsync(DownloadUrl, file, progress, cancellationToken);
+   }
+}
+
+
+public async Task DownloadFile()
+{
+   // 创建一个HttpClient实例
+   using (var client = new HttpClient())
+   {
+       // 设置超时时间
+       client.Timeout = TimeSpan.FromMinutes(5);
+
+       // 指定要下载的文件的路径
+       string filePath = @"C:\path\to\your\file";
+
+       // 指定要下载的文件的URL
+       string downloadUrl = "http://example.com/path/to/your/file";
+
+       // 创建一个CancellationTokenSource实例，用于取消下载操作
+       using (var cancellationTokenSource = new CancellationTokenSource())
+       {
+           // 创建一个Progress<T>实例，用于报告下载进度
+           var progress = new Progress<float>();
+           progress.ProgressChanged += (sender, value) => Console.WriteLine($"Download progress: {value}%");
+
+           // 开始下载文件
+           using (var file = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+           {
+               await client.DownloadAsync(downloadUrl, file, progress, cancellationTokenSource.Token);
+           }
+       }
+   }
+}
+
+//=================================
+// 创建一个CancellationTokenSource实例
+CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+// 开始下载文件
+Task downloadTask = DownloadFile(cancellationTokenSource.Token);
+
+// 在某个条件满足时取消下载
+if (someCondition)
+{
+   cancellationTokenSource.Cancel();
+}
+
+//https://bjbgp01.baidupcs.com/file/ea16bf5c4r71739f334ab27a7a80efeb?bkt=en-864c1d195a8f2f41f5f35e0fb69a34b0a8a3e98fd82305fc41813f05f7f0210844a13a06c8a4edf7f9eaf6c0177c762b34257dddc482d4db67de4257a0175f14&fid=3354200036-250528-622567063072191&time=1704290334&sign=FDTAXUbGERQlBHSKfWqi-DCb740ccc5511e5e8fedcff06b081203-gb6zc3BZ%2FPxLfltea54mLacMJt8%3D&to=75&size=1499175&sta_dx=1499175&sta_cs=4015&sta_ft=pdf&sta_ct=5&sta_mt=5&fm2=MH%2CYangquan%2CAnywhere%2C%2CNone%2Cany&ctime=1689690332&mtime=1689750132&resv0=-1&resv1=0&resv2=rlim&resv3=5&resv4=1499175&vuk=3354200036&iv=0&htype=&randtype=&tkbind_id=0&newver=1&newfm=1&secfm=1&flow_ver=3&pkey=en-cf2e7ae6a2ce6b4c19ef5488dd7b2fe6af1bbb8f694b2c5cac01e39d4460cd3cc95f76f78c8ffd28f839a0f088c8c153d174d40d55e2c34f305a5e1275657320&expires=8h&rt=pr&r=939612798&mlogid=67627818391850913&vbdid=-&fin=The-Art-of-Linear-Algebra-zh-CN.pdf&fn=The-Art-of-Linear-Algebra-zh-CN.pdf&bflag=75,80-75&err_ver=1.0&check_blue=1&rtype=1&clienttype=0&channel=chunlei&dp-logid=67627818391850913&dp-callid=40010200732247360001.1.1&hps=1&tsl=0&csl=0&fsl=-1&csign=1ml9yLhocpQ05VSR2h2MULRGCqg%3D&so=0&ut=6&uter=4&serv=0&uc=359811742&ti=974fa6b90eb1b4353f87e030aa6ed2fe04efb0c028fb6909305a5e1275657320&use=1&hflag=30&from_type=3&adg=n&reqlabel=250528_l_b9cc8bf252d89d9a574aefdb6b120b2d_-1_2ecacaaa176ec8dc87947c70ba404c49&ibp=1&by=themis
+//https://bjbgp01.baidupcs.com/file/b80b9f669s1de77be1b9037b77a00375?bkt=en-40ebf341379bd9a084403f0c9a5fc9fdd0e11ede17d827e06f88d8348cc06099c99f8f4497105d873279c63950a8408d7541899a213aca1fd607d1a436a5389f&fid=3354200036-250528-173437104901009&time=1704292308&sign=FDTAXUbGERQlBHSKfWqi-DCb740ccc5511e5e8fedcff06b081203-QHH4KvnVpGkTdCagoLYpjFodBdk%3D&to=75&size=2256833&sta_dx=2256833&sta_cs=28&sta_ft=pdf&sta_ct=6&sta_mt=6&fm2=MH%2CYangquan%2CAnywhere%2C%2CNone%2Cany&ctime=1684748844&mtime=1688720179&resv0=-1&resv1=0&resv2=rlim&resv3=5&resv4=2256833&vuk=3354200036&iv=0&htype=&randtype=&tkbind_id=0&newver=1&newfm=1&secfm=1&flow_ver=3&pkey=en-42e257ca88ba891b9671e750ae046e3dccd0515ac07176083fd0d3e1107a271177166898c944b7f1dbddbe8be8fb2b4b95abb358b4aad2e8305a5e1275657320&expires=8h&rt=pr&r=106743992&mlogid=68157843325114784&vbdid=-&fin=%E4%B8%8D%E5%AE%9A%E7%A7%AF%E5%88%86%E5%8F%B2%E8%AF%97%E9%A2%98%E9%9B%86.pdf&fn=%E4%B8%8D%E5%AE%9A%E7%A7%AF%E5%88%86%E5%8F%B2%E8%AF%97%E9%A2%98%E9%9B%86.pdf&bflag=75,80-75&err_ver=1.0&check_blue=1&rtype=1&clienttype=0&channel=chunlei&dp-logid=68157843325114784&dp-callid=60863700323527760001.1.1&hps=1&tsl=0&csl=0&fsl=-1&csign=1ml9yLhocpQ05VSR2h2MULRGCqg%3D&so=0&ut=6&uter=4&serv=0&uc=359811742&ti=1d93a8f0247a7ec131f37460c50b080da8b07d6fd065bc87&use=1&hflag=30&from_type=3&adg=n&reqlabel=250528_l_b9cc8bf252d89d9a574aefdb6b120b2d_-1_2ecacaaa176ec8dc87947c70ba404c49&ibp=1&fpath=%E6%88%91%E7%9A%84%E8%B5%84%E6%BA%90&by=themis

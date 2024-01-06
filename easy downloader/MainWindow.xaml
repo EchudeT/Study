@@ -1,0 +1,89 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="下载器" Height="251" Width="537" ResizeMode="NoResize" >
+    <Grid HorizontalAlignment="Center" Width="537" Height="251" VerticalAlignment="Top">
+        <Grid.Background>
+            <ImageBrush ImageSource="images\background2.jpg"/>
+        </Grid.Background>
+
+        <Button Name="Confirm_Button"
+                Content="开始下载" 
+                Click="Button_Click" 
+                Margin="247,172,221,50"
+                Opacity="0.5"/>
+
+        <Button Name="Cancel_Button"
+            Content="取消" 
+            Click="Cancel_Click" 
+            Margin="94,172,373,51"
+            Opacity="0.5"  />
+
+        <TextBlock Name="GameWindow" 
+                   Text="Ai! laurië lantar lassi súrinen,
+                         yéni únótimë ve rámar aldaron!
+                         Yéni ve lintë yuldar avánier
+                         mi oromardi lissë-miruvóreva
+                         Andúnë pella, Vardo tellumar
+                         nu luini yassen tintilar i eleni
+                         ómaryo airetári-lírinen."
+                   HorizontalAlignment="Left" 
+                   Margin="401,25,0,0" 
+                   TextWrapping="Wrap" 
+                   VerticalAlignment="Top" 
+                   Height="93" 
+                   Width="106" 
+                   RenderTransformOrigin="0.484,0.453"/>
+
+        <ProgressBar x:Name="progressBar" 
+                     HorizontalAlignment="Left" 
+                     Height="25" 
+                     Margin="60,0,0,0" 
+                     VerticalAlignment="Center" 
+                     Width="308" />
+
+
+        <CheckBox Name="CheckTick" 
+                  Content="我同意上述条件" 
+                  HorizontalAlignment="Left" 
+                  Margin="401,127,0,0" 
+                  VerticalAlignment="Top" 
+                  RenderTransformOrigin="0.52,1.91" 
+                  IsChecked="False"/>
+
+
+        <TextBlock Name="DPShow" 
+                   HorizontalAlignment="Left" 
+                   Margin="408,164,0,0" 
+                   TextWrapping="Wrap" 
+                   Text="" 
+                   VerticalAlignment="Top" Width="92" Height="45"/>
+        <TextBox 
+            Name="URLbox"
+            HorizontalAlignment="Left" 
+            Margin="60,20,0,0" 
+            TextWrapping="Wrap" 
+            Text="{Binding URLlink}"
+            VerticalAlignment="Top" 
+            Width="308" Height="25" 
+            RenderTransformOrigin="0.5,0.37"/>
+
+        <TextBox 
+            Name="Homebox"
+            HorizontalAlignment="Left" 
+            Margin="60,65,0,0" 
+            TextWrapping="Wrap" 
+            Text="{Binding Homelink}" 
+            VerticalAlignment="Top" 
+            Width="308" Height="27"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,25,0,0" TextWrapping="Wrap" Text="URL" VerticalAlignment="Top" Width="50" Height="12"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,71,0,0" TextWrapping="Wrap" Text="下载路径" VerticalAlignment="Top" Width="55" Height="14"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="进度条" VerticalAlignment="Center" Width="44" Height="15"/>
+        <TextBlock HorizontalAlignment="Left" Margin="348,178,0,0" TextWrapping="Wrap" Text="下载进度：" VerticalAlignment="Top"/>
+
+    </Grid>
+</Window>
