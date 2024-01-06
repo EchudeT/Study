@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width-device-width, initial-scale-1.0">
+        <title>easy design</title>
+
+        <style>
+            body{
+                font-family:Arial, Helvetica, sans-serif;
+            }
+            #main-windows{
+                margin: 50px;
+                text-align: center;
+            }
+            #info{
+                color:#333;
+                margin: 20px 0;
+            }
+            #dataTable{
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .btn{
+                padding: 10px, 20px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor:pointer;
+            }
+            .btn:hover{
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div id="main-windows">
+            <h1>Score Rank</h1>
+            <p id="info">Greet New Student</p>
+            <label for="name">Name:</label>
+            <input type="text" id="name" value="">
+
+            <label for="Chinese score">Chinese score:</label>
+            <input type="text" id="Chinese score" value="">
+
+            <label for="Math score">Math score:</label>
+            <input type="text" id="Math score" value="">
+
+            <label for="English score">English score:</label>
+            <input type="text" id="English score" value="">
+            <button class="btn" onclick="displayData()">导入数据</button>
+            <ul id="list"></ul>
+
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Chinese Score</th>
+                        <th>Math Score</th>
+                        <th>English Score</th>
+                        <th>Average Score</th>
+                    </tr>
+                </thead>
+            <tbody>
+            </tbody>
+            </table>
+        </div>
+
+        <script>
+            var dataList = [];
+            function displayData(){
+                var name   = document.getElementById("name").value;
+                var cscore = parseFloat(document.getElementById("Chinese score").value);
+                var mscore = parseFloat(document.getElementById("Math score").value);
+                var escore = parseFloat(document.getElementById("English score").value);
+                var ave    = parseInt((cscore + mscore + escore) / 3);
+
+                var data = {
+                    name:name,
+                    cscore:cscore,
+                    mscore:mscore,
+                    escore:escore,
+                    ave:ave
+                };
+
+                document.getElementById('info').textContent = name + '的   语文成绩为' + cscore + ',   数学成绩为' + mscore + ',   英语成绩为' + escore + ',   平均成绩为' + ave;
+                dataList.push(data);
+                updateTable();
+                
+            }
+
+            function updateList(){
+                var listElement = document.getElementById("list");
+
+                listElement.innerHTML = '';
+
+                for(var i = 0; i < dataList.length; i++){
+                    var li = document.createElement("li");
+                    li.textContent = 'Name:' + dataList[i].name + ',Chinese Score: ' + dataList[i].cscore + ',Math Score:' + dataList[i].mscore + 'English Score: ' + dataList[i].escore;
+                    listElement.append(li);
+                }
+            }
+
+            function updateTable(){
+                var tbodyElement = document.getElementById("dataTable").getElementsByTagName("tbody")[0];
+
+                tbodyElement.innerHTML = '';
+
+                dataList.sort(function(a, b){
+                    return b.ave-a.ave;
+                });
+
+                for(var i = 0; i < dataList.length; i++){
+                    var row = tbodyElement.insertRow(-1);
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    var cell3 = row.insertCell(2);
+                    var cell4 = row.insertCell(3);
+                    var cell5 = row.insertCell(4);
+
+                    cell1.innerHTML = dataList[i].name;
+                    cell2.innerHTML = dataList[i].cscore;
+                    cell3.innerHTML = dataList[i].mscore;
+                    cell4.innerHTML = dataList[i].escore;
+                    cell5.innerHTML = dataList[i].ave;
+                }
+            }
+        </script>
+
+    </body>
+</html>
