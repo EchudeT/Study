@@ -1,0 +1,19 @@
+﻿syntax = "proto3";
+
+package CountPack;
+
+
+service Count{
+	rpc LotsofCounts(CountRequest1) returns (stream CountReply);
+	rpc QuickCounts(stream CountRequest1) returns (stream CountReply);
+}
+
+message CountRequest1{
+	int32 num_a = 1;
+	int32 num_b = 2;
+	int32 opt   = 3;
+}
+
+message CountReply{
+	int32 reNum = 1;
+}
