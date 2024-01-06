@@ -1,1 +1,5 @@
 服务器和客户端，可以C#服务器+python客户端，或者C#客户端+python服务器，或者同语言客户端服务器（不过要自己改改）
+有一些相应的库要安装，
+C#是在VS上写的，NuNet包选用了google.xxx,grpc.tools,grpc三件
+python是在VScode上写的，选用了grpc,grpc-tools等外接库
+主要是依赖grpc技术实现的，抽象层级较高，实现较简单吧
