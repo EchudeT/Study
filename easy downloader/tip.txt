@@ -1,4 +1,5 @@
-//注意该文件是用Csharp所写
+//注意该文件是用Csharp所写，并且该文件在输入路径时还要加上文件名称，不然无法下载（什么时候改改吧，其实挺简单的）
+//这里是可用参考的代码块
 using System.Net;
 
 WebClient webClient = new WebClient();
